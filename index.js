@@ -16,34 +16,28 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // CRAD oparetion
 async function run() {
     try {
-        const resaleCategory = await client.db("resaleShop").collection("category");
+        const resaleCategory = client.db("resaleShop").collection("category");
+        const productsCollection = client.db("resaleShop").collection("products");
 
         app.get('/category', async (req, res) => {
             const query = {};
             const options = await resaleCategory.find(query).toArray();
             res.send(options);
         })
-        // await client.connect();
-        // const database = client.db('test');
-        // const collection = database.collection('test');
 
-        // // create
-        // const doc = { name: 'ifaz', age: 25 };
-        // const result = await collection.insertOne(doc);
-        // console.log(`A document was inserted with the _id: ${result.insertedId}`);
+        app.get('/category/:name', async (req, res) => {
+            const name = req.params.name;
+            const query = { name: name };
+            const category = await resaleCategory.findOne(query);
+            res.send(category);
+        })
 
-        // // read
-        // const cursor = collection.find();
-        // await cursor.forEach(console.dir);
+        app.post('/products', async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        })
 
-        // // update
-        // const query = { name: 'ifaz' };
-        // const updateDoc = {
-        //     $set: {
-        //         age: 26,category
-        //     },
-        // };
-        // const result = await collection.updateOne   
     } catch (error) {
         console.log(error.stack);
     }
